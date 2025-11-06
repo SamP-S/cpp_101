@@ -1,8 +1,11 @@
 #pragma once
 
+// std lib
 #include <exception>
 #include <cstring>
 #include <sstream>
+// internal
+#include "global.hpp"
 
 /*
     Data Structure: Queue
@@ -16,15 +19,6 @@ private:
     size_t m_back;
     size_t m_numElems;
     size_t m_size;
-
-    void resize(size_t _newSize) {
-        T* pNewData = (T*)malloc(_newSize * sizeof(T));
-        std::memcpy((void*)pNewData, (void*)m_pData, m_size * sizeof(T));
-        m_size = _newSize;
-        T* pTmp = m_pData;
-        m_pData = pNewData;
-        delete pTmp;
-    }
 
 public:
     // constructor, allow manual init size
@@ -52,7 +46,7 @@ public:
 
     // destructor
     ~Queue() {
-        delete m_pData;
+        free(m_pData);
     }
 
     // get number of elements in queue
@@ -71,7 +65,8 @@ public:
             if (m_size == SIZE_MAX) {
                 throw std::length_error("Queue: can't push elements beyond SIZE_MAX");
             } else {
-                resize(m_size << 1);
+                memresize<T>(&m_pData, m_size, m_size << 1);
+                m_size = m_size << 1;
             }
         }
         m_back = (m_back + 1) % m_size;
