@@ -1,23 +1,24 @@
 // std lib
 #include <iostream>
 // internal
+#include "i_indexed.hpp"
 #include "array.hpp"
 #include "queue.hpp"
 #include "stack.hpp"
 
-void testArray() {
-    std::cout << "START TEST: ARRAY" << std::endl;
-    Array<int, 3> array;
-    std::cout << "array = " << array.toString() << std::endl;
-    array.fill(1);
-    std::cout << "array = " << array.toString() << std::endl;
-    array.clear();
-    std::cout << "array = " << array.toString() << std::endl;
-    array[1] = 2;
-    std::cout << "array = " << array.toString() << std::endl;
-    array[2] = 3;
-    std::cout << "array = " << array.toString() << std::endl;
-    std::cout << "END TEST: ARRAY" << std::endl << std::endl;
+
+void testIndexed(std::string _name, IIndexed<int>* _indexed) {
+    std::cout << "START TEST: " << _name << std::endl;
+    std::cout << _name << " = " << _indexed->toString() << std::endl;
+    _indexed->fill(1);
+    std::cout << _name << " = " << _indexed->toString() << std::endl;
+    _indexed->clear();
+    std::cout << _name << " = " << _indexed->toString() << std::endl;
+    for (int i = 0; i < 6; i++) {
+		(*_indexed)[i] = i;
+		std::cout << _name << " = " << _indexed->toString() << std::endl;
+	}
+   	std::cout << "END TEST: " << _name << std::endl << std::endl;
 }
 
 void testQueue() {
@@ -51,7 +52,8 @@ void testStack() {
 }
 
 int main() {
-    testArray();
+	Array<int, 8>* array = new Array<int, 8>();
+    testIndexed("array", array);
     testQueue();
     testStack();
 }

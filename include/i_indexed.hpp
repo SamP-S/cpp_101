@@ -25,10 +25,11 @@ public:
     
     // set all values to default "0"
     virtual void clear() = 0;
-
+	
 	// overload index operator
 	virtual T& operator[](size_t _index) = 0;
 
     // convert to string for debug
     virtual std::string toString() = 0;
 };
+

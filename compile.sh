@@ -3,3 +3,4 @@ if [[ "$1" == "clean" ]]; then
 fi
 cmake -S . -B build
 cmake --build build
+
