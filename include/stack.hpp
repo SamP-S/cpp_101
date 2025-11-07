@@ -90,7 +90,7 @@ public:
 
     std::string toString() {
         std::stringstream ss;
-        ss << "{size=" << m_size << "; ";
+        ss << "{ size=" << m_size << "; ";
         for (size_t i = 0; i < m_numElems; i++) {
             size_t idx = (m_front + i) % m_size;
             ss << m_pData[idx];

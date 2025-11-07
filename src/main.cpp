@@ -3,6 +3,7 @@
 // internal
 #include "i_indexed.hpp"
 #include "array.hpp"
+#include "list.hpp"
 #include "queue.hpp"
 #include "stack.hpp"
 
@@ -52,8 +53,14 @@ void testStack() {
 }
 
 int main() {
+	// fixed sized array
 	Array<int, 8>* array = new Array<int, 8>();
     testIndexed("array", array);
-    testQueue();
-    testStack();
+    // dynamically sized array
+	List<int>* list = new List<int>(3);
+	testIndexed("list", list);
+	// fifo queue
+	//testQueue();
+	// filo stack
+    //testStack();
 }

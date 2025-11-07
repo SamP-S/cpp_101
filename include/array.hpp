@@ -51,7 +51,8 @@ public:
     // convert array to string
     std::string toString() override {
         std::stringstream ss;
-        ss << "{ " << m_data[0];
+        ss << "{ size=" << SIZE << "; "; 
+		ss << m_data[0];
         for (size_t i = 1; i < SIZE; i++) {
             ss << ", " << m_data[i];
         }
