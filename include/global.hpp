@@ -1,5 +1,6 @@
 #pragma once
 
+// std lib
 #include <exception>
 #include <cstring>
 #include <sstream>
@@ -12,5 +13,22 @@ void memresize(T** _p, size_t _size, size_t _newSize) {
     T* pTmp = *_p;
     *_p = pNew;
     free(pTmp);
+}
+
+// round to next highest base 2
+size_t nearestBase2(size_t _n) {	
+	if (_n == 0) {
+		_n = 1;
+	} else {
+		_n--;
+		_n |= _n >> 1;
+		_n |= _n >> 2;
+		_n |= _n >> 4;
+		_n |= _n >> 8;
+		_n |= _n >> 16;
+		_n |= _n >> 32;
+	}
+	_n++;
+	return _n;
 }
 

@@ -23,20 +23,8 @@ private:
 public:
     // constructor, allow manual init size
     Queue(size_t _n = 4) {
-        // round to next highest base 2
-        if (_n == 0) {
-            _n = 1;
-        } else {
-            _n--;
-            _n |= _n >> 1;
-            _n |= _n >> 2;
-            _n |= _n >> 4;
-            _n |= _n >> 8;
-            _n |= _n >> 16;
-            _n |= _n >> 32;
-        }
-        _n++;
-        // assign
+        _n = nearestBase2(_n);
+		// assign
         m_pData = (T*)malloc(_n * sizeof(T));
         m_size = _n;
         m_front = 0;
