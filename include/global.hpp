@@ -5,18 +5,37 @@
 #include <cstring>
 #include <sstream>
 #include <iostream>
+#include <cassert>
+
+// allocate memory
+template<typename T>
+T* memalloc(size_t _size) {
+	return (T*)malloc(_size * sizeof(T));
+}
+
+template<typename T>
+void memfree(T* _pData) {
+	free((void*)_pData);
+}
 
 // resize memory at pointer keeping existing data in place and default new elements
 template<typename T>
 void memresize(T** _p, size_t _size, size_t _newSize) {
+	assert(_newSize >= _size && "Must resize larger than existing");
     // allocate new memory and copy
 	T* pNew = (T*)malloc(_newSize * sizeof(T));
     std::memcpy((void*)pNew, (void*)*_p, _size * sizeof(T));
     T* pTmp = *_p;
     *_p = pNew;
-    free(pTmp);
-	// back fill new elements with default value
-	std::memset((void*)(*_p + _size), T(), (_newSize - _size) * sizeof(T)); 
+    memfree<T>(pTmp);
+	// // back fill new elements with default value
+	// std::memset((void*)(*_p + _size), T(), (_newSize - _size) * sizeof(T)); 
+}
+
+// copy memory from source to dest of size
+template<typename T>
+void memcpy(T* _pDest, T* _pSrc, size_t _size) {
+	std::memcpy((void*)_pDest, (void*)_pSrc, _size * sizeof(T));
 }
 
 // round to next highest base 2
