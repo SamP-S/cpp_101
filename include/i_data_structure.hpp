@@ -24,6 +24,9 @@ public:
 	// get allocated size of data structure
 	virtual size_t allocated() = 0;
 
+	// bool check if empty
+	virtual bool empty() = 0;
+
 	// resize allocated size of data structure
 	virtual void resize(size_t _n) = 0;
 

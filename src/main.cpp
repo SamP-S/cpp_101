@@ -12,9 +12,9 @@
 #define TEST_ARRAY_RANGE 	12
 
 #define TEST_LIST	true
-#define TEST_INIT	3
-#define TEST_PUSHES 6
-#define TEST_POPS	4
+#define TEST_INIT	0
+#define TEST_PUSHES 7
+#define TEST_POPS	3
 
 void testArray(std::string _name, Array<int, TEST_ARRAY_SIZE>* _array) {
 	std::cout << "START TEST: " << _name << std::endl;
@@ -37,10 +37,6 @@ void printDS(std::string _name, IDataStructure<int>* _ds) {
 void testDS(std::string _name, IDataStructure<int>* _ds) {
     std::cout << "START TEST: " << _name << std::endl;
     printDS(_name, _ds);
-    _ds->fill(1);
-    printDS(_name, _ds);
-    _ds->clear();
-    printDS(_name, _ds);
     for (int i = 0; i < TEST_PUSHES; i++) {
 		_ds->push(TEST_PUSHES - i - 1);
 		printDS(_name, _ds);
@@ -53,10 +49,18 @@ void testDS(std::string _name, IDataStructure<int>* _ds) {
 	printDS(_name, _ds);
 	_ds->pop_front();
 	printDS(_name, _ds);
-	_ds->insert(3, 12);
+	_ds->insert(2, 999);
 	printDS(_name, _ds);
-	_ds->remove(3);
+	_ds->remove(2);
 	printDS(_name, _ds);
+	_ds->insert(_ds->size() + 4, 9999);
+	printDS(_name, _ds);
+	_ds->remove(_ds->size());
+	printDS(_name, _ds);
+	_ds->fill(1);
+    printDS(_name, _ds);
+    _ds->clear();
+    printDS(_name, _ds);
 	
    	std::cout << "END TEST: " << _name << std::endl << std::endl;
 }

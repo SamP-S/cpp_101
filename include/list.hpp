@@ -20,13 +20,11 @@ private:
 	size_t m_end;
 
 public:
-    // O(n): constructor, allow manual init size
-    List(size_t _n) {
-		size_t allocSize = nearestBase2(_n);
-		m_pData = memalloc<T>(allocSize);
-		m_size = allocSize;
-		m_end = _n;
-		this->clear();
+    // O(n): constructor, allow manual init alloc size
+    List(size_t _alloc = 4) {
+		m_size = nearestBase2(_alloc);
+		m_pData = memalloc<T>(m_size);
+		m_end = 0;
 	}
 
     // O(1): destructor
@@ -42,6 +40,11 @@ public:
 	// O(1): get allocated memory size of list
 	size_t allocated() override {
 		return m_size;
+	}
+
+	// O(1): check if used list is empty
+	bool empty() override {
+		return m_end == 0;
 	}
 
 	// O(n): resize data structure
@@ -124,7 +127,7 @@ public:
 	// O(n): remove element at index
 	T remove(size_t _index) override {
 		// throw error if out of range
-		if (_index >= m_size) {
+		if (_index > m_end) {
 			throw std::range_error("Can't remove an element out of the list range");
 		}
 		// pop if index at end
@@ -147,10 +150,12 @@ public:
     std::string toString() override {
         std::stringstream ss;
       	ss << "{ size=" << m_size << "; used=" << m_end << "; "; 
-		ss << m_pData[0];
-        for (size_t i = 1; i < m_end; i++) {
-            ss << ", " << m_pData[i];
-        }
+		if (m_end > 0) {
+			ss << m_pData[0];
+			for (size_t i = 1; i < m_end; i++) {
+				ss << ", " << m_pData[i];
+			}
+		}
         ss << " }";
         return ss.str();
     }
