@@ -84,6 +84,8 @@ int main() {
 		testSequence("dynamic-array", dynArr);
 		LinkedList<int>* ll = new LinkedList<int>();
 		testSequence("linked-list", ll);
+		DoublyLinkedList<int>* dll = new DoublyLinkedList<int>();
+		testSequence("doubly-linked-list", dll);
 	}	
 
 	// if (TEST_ORDERED) {

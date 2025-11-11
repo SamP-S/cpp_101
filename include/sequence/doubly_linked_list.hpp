@@ -11,30 +11,31 @@
 #include "sequence/i_sequence.hpp"
 
 /*
-	Data Structure: Linked List
+	Data Structure: Doubly Linked List
 */
-	
+
 template<typename T>
-class LinkedList : public ISequence<T> {
+class DoublyLinkedList : public ISequence<T> {
 private: 
 	
-	struct LinkedNode {
+	struct DoublyLinkedNode {
 		T data;
-		LinkedNode* pNext;
+		DoublyLinkedNode* pNext;
+		DoublyLinkedNode* pPrev;
 	};
 
-	LinkedNode* m_pFirst;
+	DoublyLinkedNode* m_pFirst;
 	size_t m_size;
 
 public:
 	// O(1): constructor
-	LinkedList() {
+	DoublyLinkedList() {
 		m_pFirst = nullptr;
 		m_size = 0;
 	} 
 	
 	// O(n): destructor
-	~LinkedList() {
+	~DoublyLinkedList() {
 		this->clear();
 	}
 
@@ -45,7 +46,7 @@ public:
 
 	// O(1): get allocated memory size of dynamic array
 	size_t allocated() override {
-		return m_size * sizeof(LinkedNode) + sizeof(LinkedList);
+		return m_size * sizeof(DoublyLinkedNode) + sizeof(DoublyLinkedList);
 	}
 
 	// O(1): check if used dynamic array is empty
@@ -62,9 +63,10 @@ public:
 
 	// O(n): fill all elements with value
 	void fill(T _value) override {
-		// iterate through list, set value
-		for (LinkedNode* pNode = m_pFirst; pNode != nullptr; pNode = pNode->pNext) {
+		DoublyLinkedNode* pNode = m_pFirst;
+		while (pNode != nullptr) {
 			pNode->data = _value;
+			pNode = pNode->pNext;
 		}
 	}
 	
@@ -73,19 +75,26 @@ public:
 		if (_index >= m_size) {
 			throw std::out_of_range("Cannot access element out of range");
 		}
-		LinkedNode* pNode = m_pFirst;
-		for (size_t i = 0; i < _index; ++i) {
+		size_t i = 0;
+		DoublyLinkedNode* pNode = m_pFirst;
+		while (pNode != nullptr) {
+			if (i == _index) {
+				return pNode->data;
+			}
 			pNode = pNode->pNext;
+			i++;
 		}
-		return pNode->data;
 	}
 
 	// O(1): push front
 	void push_front(T _elem) override {
-		LinkedNode* pTmp = m_pFirst;
-		LinkedNode* pFront = new LinkedNode();
+		DoublyLinkedNode* pFront = new DoublyLinkedNode();
 		pFront->data = _elem;
-		pFront->pNext = pTmp;
+		pFront->pNext = m_pFirst;
+		pFront->pPrev = nullptr;
+		if (m_pFirst != nullptr) {
+			m_pFirst->pPrev = pFront;
+		}
 		m_pFirst = pFront;
 		m_size++;
 	}
@@ -95,9 +104,12 @@ public:
 		if (this->empty()) {
 			throw std::out_of_range("Cannot pop from empty list");
 		}
-		LinkedNode* pTmp = m_pFirst;
+		DoublyLinkedNode* pTmp = m_pFirst;
 		T ret = m_pFirst->data;
 		m_pFirst = m_pFirst->pNext;
+		if (m_pFirst != nullptr) {
+			m_pFirst->pPrev = nullptr;
+		}
 		m_size--;
 		delete pTmp;
 		return ret;
@@ -105,21 +117,18 @@ public:
 
 	// O(n): push back
 	void push_back(T _elem) override {
-		// create new node
-		LinkedNode* pNew = new LinkedNode();
-		pNew->data = _elem;
-		pNew->pNext = nullptr;
-		// add to first if empty
-		if (m_pFirst == nullptr) {
-			m_pFirst = pNew;
-			m_size++;
+		if (this->empty()) {
+			this->push_front(_elem);
 			return;
 		}
-		// find end and add node
-		LinkedNode* pNode = m_pFirst;
+		DoublyLinkedNode* pNode = m_pFirst;
 		while (pNode->pNext != nullptr) {
 			pNode = pNode->pNext;
 		}
+		DoublyLinkedNode* pNew = new DoublyLinkedNode();
+		pNew->data = _elem;
+		pNew->pNext = nullptr;
+		pNew->pPrev = pNode;
 		pNode->pNext = pNew;
 		m_size++;
 	}
@@ -129,77 +138,61 @@ public:
 		if (this->empty()) {
 			throw std::out_of_range("Cannot pop from empty list");
 		}
-		// remove from first if size 1
-		if (m_size == 1) {
-			assert(m_pFirst->pNext == nullptr && "Size mismatch");
-			T ret = m_pFirst->data;
-			delete m_pFirst;
-			m_pFirst = nullptr;
-			m_size--;
-			return ret;
+		if (m_pFirst->pNext == nullptr) {
+			return this->pop_front();
 		}
-		// find and remove end node
-		LinkedNode* pNodeBefore = m_pFirst;
-		LinkedNode* pNodeEnd = m_pFirst->pNext;
-		while (pNodeEnd->pNext != nullptr) {
-			pNodeBefore = pNodeEnd;
-			pNodeEnd = pNodeEnd->pNext;
+		DoublyLinkedNode* pNode = m_pFirst;
+		while (pNode->pNext != nullptr) {
+			pNode = pNode->pNext;
 		}
-		T ret = pNodeEnd->data;
-		pNodeBefore->pNext = nullptr;
-		delete pNodeEnd;
+		T ret = pNode->data;
+		pNode->pPrev->pNext = nullptr;
+		delete pNode;
 		m_size--;
 		return ret;
 	}
 
 	// O(n): insert element at index
 	void insert(size_t _index, T _elem) override {
-		// clamp index to end of list
 		if (_index >= m_size) {
 			this->push_back(_elem);
 			return;
 		}
-		// push front if index 0
 		if (_index == 0) {
 			this->push_front(_elem);
 			return;
 		}
-		// find node at index
-		LinkedNode* pNodeBefore = m_pFirst;
-		LinkedNode* pNodeKey = m_pFirst->pNext;
-		for (size_t i = 1; i < _index; ++i) {
-			pNodeBefore = pNodeKey;
-			pNodeKey = pNodeKey->pNext;
+		DoublyLinkedNode* pNode = m_pFirst;
+		for (size_t i = 0; i < _index; i++) {
+			pNode = pNode->pNext;
 		}
-		// insert
-		LinkedNode* pNew = new LinkedNode();
+		DoublyLinkedNode* pNew = new DoublyLinkedNode();
 		pNew->data = _elem;
-		pNew->pNext = pNodeKey;
-		pNodeBefore->pNext = pNew;
+		pNew->pNext = pNode;
+		pNew->pPrev = pNode->pPrev;
+		pNode->pPrev->pNext = pNew;
+		pNode->pPrev = pNew;
 		m_size++;
 	}
 
 	// O(n): remove element at index
 	T remove(size_t _index) override {
-		// remove from end if index >= size
 		if (_index >= m_size) {
 			return this->pop_back();
 		}
-		// pop front if index 0
 		if (_index == 0) {
 			return this->pop_front();
 		}
-		// find node at index
-		LinkedNode* pNodeBefore = m_pFirst;
-		LinkedNode* pNodeKey = m_pFirst->pNext;
-		for (size_t i = 1; i < _index; ++i) {
-			pNodeBefore = pNodeKey;
-			pNodeKey = pNodeKey->pNext;
+		DoublyLinkedNode* pNode = m_pFirst;
+		for (size_t i = 0; i < _index; i++) {
+			pNode = pNode->pNext;
 		}
-		T ret = pNodeKey->data;
-		// remove
-		pNodeBefore->pNext = pNodeKey->pNext;
-		delete pNodeKey;
+		T ret = pNode->data;
+		pNode->pPrev->pNext = pNode->pNext;
+		if (pNode->pNext != nullptr) {
+			pNode->pNext->pPrev = pNode->pPrev;
+		}
+		delete pNode;
 		m_size--;
 		return ret;
 	}
@@ -208,8 +201,8 @@ public:
 	std::string toString() override {
 		std::stringstream ss;
 		ss << "{ size=" << m_size << "; alloc=" << this->allocated() << "; ";
-		LinkedNode* pNode = m_pFirst;
-		for (size_t i = 0; i < m_size; ++i) {
+		DoublyLinkedNode* pNode = m_pFirst;
+		while (pNode != nullptr) {
 			ss << pNode->data;
 			if (pNode->pNext != nullptr) {
 				ss << ", ";
