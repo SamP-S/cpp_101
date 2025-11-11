@@ -11,7 +11,7 @@ template<typename T>
 class IDataStructure {
 public:
     // constructor/destructor
-    virtual IDataStructure() = default;
+    IDataStructure() = default;
     virtual ~IDataStructure() = default;
 
     // get number of elements in data structure

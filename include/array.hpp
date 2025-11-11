@@ -12,7 +12,7 @@
 */
 
 template<typename T, size_t SIZE>
-class Array : public IDataStructure {
+class Array : public IDataStructure<T> {
 private: 
     T m_data[SIZE] = {};
 
@@ -32,11 +32,16 @@ public:
 	}
 
 	// reset to 0s
-    void clear() {
+    void clear() override {
         for (size_t i = 0; i < SIZE; i++) {
 			m_data[i] = T();
 		}
     }
+
+	// array cant be empty
+	bool empty() override {
+		return false;
+	}
 
     // fill all elements with value
     void fill(T _value) {

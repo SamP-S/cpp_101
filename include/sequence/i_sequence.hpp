@@ -2,23 +2,24 @@
 
 // std lib
 #include <cstring>
+#include <cstring>
 // internal
 #include "common/i_data_structure.hpp"
 
 /*
-    Interface: Linear Indexed Sequentially Packed
+	Interface: Linear Indexed Sequentially Packed
 */
 
 template<typename T>
-class ISequence : public IDataStructure {
+class ISequence : public IDataStructure<T> {
 public:
-    // constructor/destructor
-    virtual ISequence() = default;
-    virtual ~ISequence() = default;
+	// constructor/destructor
+	ISequence() = default;
+	virtual ~ISequence() = default;
 
-    // fill all used elements with value
-    virtual void fill(T _value) = 0;
-    
+	// fill all used elements with value
+	virtual void fill(T _value) = 0;
+	
 	// access existing element
 	virtual T& operator[](size_t _index) = 0;
 
@@ -31,5 +32,11 @@ public:
 	// insert/remove at arbitrary index
 	virtual void insert(size_t _index, T _elem) = 0;
 	virtual T remove(size_t _index) = 0;
-};
 
+	// IDataStructure overrides
+	virtual size_t size() override = 0;
+	virtual size_t allocated() override = 0;
+	virtual bool empty() override = 0;
+	virtual void clear() override = 0;
+	virtual std::string toString() override = 0;
+};
