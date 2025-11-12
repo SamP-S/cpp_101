@@ -7,6 +7,13 @@
 #include <iostream>
 #include <cassert>
 
+// template pair
+template<typename S, typename T>
+struct Pair {
+	S first;
+	T second;
+};
+
 // allocate memory
 template<typename T>
 T* memalloc(size_t _size) {

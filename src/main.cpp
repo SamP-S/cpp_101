@@ -1,6 +1,9 @@
 // std lib
 #include <iostream>
+#include <random>
+#include <sstream>
 // internal
+#include "common/global.hpp"
 #include "common/i_data_structure.hpp"
 #include "array.hpp"
 #include "sequence/i_sequence.hpp"
@@ -10,14 +13,47 @@
 #include "sequence/circular_linked_list.hpp"
 #include "sequence/doubly_linked_list.hpp"
 #include "sequence/circular_doubly_linked_list.hpp"
+#include "sorting/merge_sort.hpp"
 
 #define TEST_ARRAY 			false
 #define TEST_ARRAY_SIZE 	16
 #define TEST_ARRAY_RANGE 	12
 
-#define TEST_SEQUENCE	true
+#define TEST_SEQUENCE	false
 #define TEST_PUSHES 	7
 #define TEST_POPS		3
+
+#define TEST_SORT		true
+#define TEST_SORT_SIZE	12
+#define TEST_SORT_MAX	(1 << 8)
+
+template<typename T>
+std::string arrayToString(T* _pArr, size_t _size) {
+	std::stringstream ss;
+	ss << "{ size=" << _size << "; ";
+	if (_size != 0) {
+		ss << _pArr[0];
+	}
+	for (size_t i = 1; i < _size; i++) {
+		ss << ", " << _pArr[i];
+	}
+	ss << " }";
+	return ss.str();
+}
+
+template<typename T>
+void printArray(std::string _name, T* _pArr, size_t _size) {
+	std::cout << _name << " = " << arrayToString<T>(_pArr, _size) << std::endl;
+}
+
+template<typename T>
+T* genRandArray(size_t _size) {
+	T* pArr = memalloc<T>(_size);
+	for (size_t i = 0; i < _size; i++) {
+		pArr[i] = (int)(rand() % TEST_SORT_MAX);
+	}
+	return pArr;
+}
 
 void printDS(std::string _name, IDataStructure<int>* _ds) {
 	std::cout << _name << " = " << _ds->toString() << std::endl;
@@ -94,12 +130,20 @@ int main() {
 		testSequence("circular-doubly-linked-list", cdll);
 	}	
 
-	// if (TEST_ORDERED) {
-	// 	// fifo queue
-	// 	Queue<int>* queue = new Queue<int>(4);
-	// 	testDS("queue", queue);
-	// 	// filo stack
-	// 	Stack<int>* stack = new Stack<int>(4);
-	// 	testDS("stack", stack);
-	// }
+	if (TEST_SORT) {
+		std::pair<std::string, void(*)(int*, size_t)> sortAlg[] = {
+			{"merge-sort", merge_sort<int>}
+		};
+		size_t sortAlgSize = sizeof(sortAlg) / sizeof(sortAlg[0]);
+		size_t size = TEST_SORT_SIZE;
+		for (size_t i = 0; i < sortAlgSize; i++) {
+			std::string name = sortAlg[i].first;
+			void(*alg)(int*, size_t) = sortAlg[i].second;
+			int* pArr = genRandArray<int>(size);
+			printArray<int>(name + "-before\t", pArr, size);
+			alg(pArr, size);
+			printArray<int>(name + "-after\t", pArr, size);
+			memfree<int>(pArr);
+		}
+	}
 }
