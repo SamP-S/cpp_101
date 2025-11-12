@@ -67,6 +67,8 @@ void merge_sort_impl(T* _pArr, size_t _left, size_t _mid, size_t _right) {
 	memfree<T>(tmp);
 }
 
+
+// O(n log(n)): merge sort using recursion
 template<typename T>
 void merge_sort(T* _pArr, size_t _size) {
 	// return if naturally sorted

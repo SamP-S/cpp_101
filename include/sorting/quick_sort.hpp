@@ -41,7 +41,7 @@ void quick_sort_impl(T* _pArr, size_t _low, size_t _high) {
 	}
 }
 
-// O(n log(n)): quick sort using random pivot
+// O(n log(n)): quick sort using random pivot & recursion
 template<typename T>
 void quick_sort(T* _pArr, size_t _size) {
 	// return if naturally sorted
