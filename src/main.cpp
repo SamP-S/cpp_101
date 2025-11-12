@@ -15,6 +15,7 @@
 #include "sequence/circular_doubly_linked_list.hpp"
 #include "sorting/merge_sort.hpp"
 #include "sorting/bubble_sort.hpp"
+#include "sorting/quick_sort.hpp"
 
 #define TEST_ARRAY 			false
 #define TEST_ARRAY_SIZE 	16
@@ -144,7 +145,8 @@ int main() {
 		std::pair<std::string, void(*)(int*, size_t)> sortAlg[] = {
 			{"merge-sort", merge_sort<int>},
 			{"bubble-sort", bubble_sort<int>},
-			{"bubble-sort-fast", bubble_sort_fast<int>}
+			{"bubble-sort-fast", bubble_sort_fast<int>},
+			{"quick-sort", quick_sort<int>}
 		};
 		size_t sortAlgSize = sizeof(sortAlg) / sizeof(sortAlg[0]);
 		size_t size = TEST_SORT_SIZE;

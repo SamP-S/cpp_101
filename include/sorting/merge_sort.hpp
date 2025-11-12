@@ -73,7 +73,7 @@ void merge_sort(T* _pArr, size_t _size) {
 	if (_size <= 1) {
 		return;
 	} else if (_size == 2) {
-		// swap if pair if necessary
+		// swap pair if necessary
 		if (_pArr[0] > _pArr[1]) {
 			swap(_pArr, 0, 1);
 		}
