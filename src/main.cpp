@@ -66,7 +66,7 @@ T* genRevArray(size_t _size) {
 	return pArr;
 }
 
-void printDS(std::string _name, IDataStructure<int>* _ds) {
+void printDS(std::string _name, IDataStructure* _ds) {
 	std::cout << _name << " = " << _ds->toString() << std::endl;
 }
 

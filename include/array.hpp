@@ -12,7 +12,7 @@
 */
 
 template<typename T, size_t SIZE>
-class Array : public IDataStructure<T> {
+class Array : public IDataStructure {
 private: 
     T m_data[SIZE] = {};
 

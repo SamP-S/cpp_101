@@ -13,7 +13,7 @@
 */
 
 template<typename T>
-class Stack : public IDataStructure<T> {
+class Stack : public IDataStructure {
 private:
 	ISequence<T>* m_pImpl;
 

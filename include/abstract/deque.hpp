@@ -14,7 +14,7 @@
 */
 
 template<typename T>
-class Deque : public IDataStructure<T> {
+class Deque : public IDataStructure {
 private:
 	ISequence<T>* m_pImpl;
 

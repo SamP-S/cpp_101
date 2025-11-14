@@ -14,7 +14,7 @@
 */
 
 template<typename T>
-class Queue : public IDataStructure<T> {
+class Queue : public IDataStructure {
 private:
 	ISequence<T>* m_pImpl;
 

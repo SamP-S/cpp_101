@@ -7,7 +7,6 @@
     Interface: Universal Data Structure Base
 */
 
-template<typename T>
 class IDataStructure {
 public:
     // constructor/destructor

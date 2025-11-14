@@ -10,7 +10,7 @@
 */
 
 template<typename T>
-class ISequence : public IDataStructure<T> {
+class ISequence : public IDataStructure {
 public:
 	// constructor/destructor
 	ISequence() = default;
