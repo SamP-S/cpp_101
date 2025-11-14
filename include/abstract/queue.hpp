@@ -6,7 +6,7 @@
 #include <sstream>
 #include <cassert>
 // internal
-#include "i_data_structure.hpp"
+#include "common/i_data_structure.hpp"
 #include "sequence/i_sequence.hpp"
 
 /*
@@ -45,13 +45,18 @@ public:
         return m_pImpl->empty();
     }
 
+	// clear all elements, return to empty
+	void clear() override {
+		m_pImpl->clear();
+	}
+
     // push element to back of queue
-    void enqueue(T _elem) override {
+    void enqueue(T _elem) {
         m_pImpl->push_back(_elem);
     }
 
     // pop element from front queue
-    T dequeue() override {
+    T dequeue() {
 		if (this->empty()) {
 			throw std::out_of_range("Cannot dequeue from empty queue");
 		}
@@ -59,7 +64,7 @@ public:
     }
 
     // get a reference to front element
-    T& front() override {
+    T& front() {
 		if (this->empty()) {
 			throw std::out_of_range("Cannot get front of empty queue");
 		}
@@ -67,7 +72,7 @@ public:
     }
 
     // get a reference to back element
-    T& back() override {
+    T& back() {
         if (this->empty()) {
             throw std::out_of_range("Cannot get back of empty queue");
         }

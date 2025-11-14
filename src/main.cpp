@@ -16,18 +16,24 @@
 #include "sorting/merge_sort.hpp"
 #include "sorting/bubble_sort.hpp"
 #include "sorting/quick_sort.hpp"
+#include "btree_kv/i_btree_kv.hpp"
+#include "btree_kv/binary_search_tree_kv.hpp"
 
 #define TEST_ARRAY 			false
 #define TEST_ARRAY_SIZE 	16
 #define TEST_ARRAY_RANGE 	12
 
-#define TEST_SEQUENCE	false
-#define TEST_PUSHES 	7
-#define TEST_POPS		3
+#define TEST_SEQUENCE		false
+#define TEST_PUSHES 		7
+#define TEST_POPS			3
 
-#define TEST_SORT		true
-#define TEST_SORT_SIZE	12
-#define TEST_SORT_MAX	(1 << 8)
+#define TEST_SORT			false
+#define TEST_SORT_SIZE		12
+#define TEST_SORT_MAX		(1 << 8)
+
+#define TEST_BTREEKV		true
+#define TEST_BTREEKV_SIZE	7
+#define TEST_BTREEKV_MAX	(1 << 8)
 
 template<typename T>
 std::string arrayToString(T* _pArr, size_t _size) {
@@ -119,6 +125,48 @@ void testSequence(std::string _name, ISequence<int>* _seq) {
    	std::cout << "END TEST: " << _name << std::endl << std::endl;
 }
 
+void testSorting(std::string _name, void(*_fn)(int*, size_t)) {
+	size_t size = TEST_SORT_SIZE;
+	int* pArr = nullptr;
+	std::cout << "START TEST: " << _name << std::endl;
+	
+	// sort random array
+	pArr = genRandArray<int>(size);
+	printArray<int>("rand-before\t", pArr, size);
+	_fn(pArr, size);
+	printArray<int>("rand-after\t", pArr, size);
+	memfree<int>(pArr);
+	
+	// sort reverse order array
+	pArr = genRevArray<int>(size);
+	printArray<int>("rev-before\t", pArr, size);
+	_fn(pArr, size);
+	printArray<int>("rev-after\t", pArr, size);
+	memfree<int>(pArr);
+
+	std::cout << "END TEST: " << _name << std::endl;
+}
+
+void testBTreeKV(std::string _name, IBTreeKV<int, int>* _btree) {
+	std::cout << "START TEST: " << _name << std::endl;
+	printDS("initial\t\t", (IDataStructure*)_btree);
+	size_t size = TEST_BTREEKV_SIZE;
+	int find = size / 2;
+	for (size_t i = 0; i < size; i++) {
+		int k = rand() % TEST_BTREEKV_MAX;
+		_btree->insert(k, i);
+		if (i == find) {
+			find = k;
+		}
+		printDS("insert\t\t", (IDataStructure*)_btree);
+	}
+	_btree->remove(find);
+	printDS("remove-key\t", (IDataStructure*)_btree);
+	_btree->clear();
+	printDS("clear\t\t", (IDataStructure*)_btree);
+	std::cout << "END TEST: " << _name << std::endl;
+}
+
 int main() {
 	// fixed sized array
 	if (TEST_ARRAY) {
@@ -128,50 +176,43 @@ int main() {
 
 	// dynamically sized array
 	if (TEST_SEQUENCE) {
-		DynamicArray<int>* da = new DynamicArray<int>();
-		testSequence("dynamic-array", da);
-		CircularDynamicArray<int>* cda = new CircularDynamicArray<int>();
-		LinkedList<int>* ll = new LinkedList<int>();
-		testSequence("linked-list", ll);
-		CircularLinkedList<int>* cll = new CircularLinkedList<int>();
-		testSequence("circular-linked-list", cll);
-		DoublyLinkedList<int>* dll = new DoublyLinkedList<int>();
-		testSequence("doubly-linked-list", dll);
-		CircularDoublyLinkedList<int>* cdll = new CircularDoublyLinkedList<int>();
-		testSequence("circular-doubly-linked-list", cdll);
+		std::pair<std::string, ISequence<int>*> seqs[] = {
+			{"dynamic-array", new DynamicArray<int>()},
+			{"circular-dynamic-array", new CircularDynamicArray<int>()},
+			{"linked-list", new LinkedList<int>()},
+			{"circular-linked-list", new CircularLinkedList<int>()},
+			{"doubly-linked-list", new DoublyLinkedList<int>()},
+			{"circular-doubly-linked-list", new CircularDoublyLinkedList<int>()}
+		};
+
+		for (const auto& seq : seqs) {
+			testSequence(seq.first, seq.second);
+			delete seq.second;
+		}
 	}	
 
+	// sorting algorithms
 	if (TEST_SORT) {
-		std::pair<std::string, void(*)(int*, size_t)> sortAlg[] = {
+		std::pair<std::string, void(*)(int*, size_t)> sorts[] = {
 			{"merge-sort", merge_sort<int>},
 			{"bubble-sort", bubble_sort<int>},
 			{"bubble-sort-fast", bubble_sort_fast<int>},
 			{"quick-sort", quick_sort<int>}
 		};
-		size_t sortAlgSize = sizeof(sortAlg) / sizeof(sortAlg[0]);
-		size_t size = TEST_SORT_SIZE;
-		for (size_t i = 0; i < sortAlgSize; i++) {
-			// get algorithm
-			std::string name = sortAlg[i].first;
-			void(*alg)(int*, size_t) = sortAlg[i].second;
-			int* pArr = nullptr;
-			std::cout << "BEGIN TEST: " << name << std::endl;
-			
-			// sort random array
-			pArr = genRandArray<int>(size);
-			printArray<int>("rand-before\t", pArr, size);
-			alg(pArr, size);
-			printArray<int>("rand-after\t", pArr, size);
-			memfree<int>(pArr);
-			
-			// sort reverse order array
-			pArr = genRevArray<int>(size);
-			printArray<int>("rev-before\t", pArr, size);
-			alg(pArr, size);
-			printArray<int>("rev-after\t", pArr, size);
-			memfree<int>(pArr);
 
-			std::cout << "END TEST: " << name << std::endl;
+		for (const auto& sort : sorts) {
+			testSorting(sort.first, sort.second);
+		}
+	}
+
+	if (TEST_BTREEKV) {
+		std::pair<std::string, IBTreeKV<int, int>*> btrees[] = {
+			{"binary-search-tree-kv", new BinarySearchTreeKV<int, int>()}
+		};
+
+		for (const auto& btree : btrees) {
+			testBTreeKV(btree.first, btree.second);
+			delete btree.second;
 		}
 	}
 }
