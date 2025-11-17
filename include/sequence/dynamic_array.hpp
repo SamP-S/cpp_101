@@ -17,21 +17,21 @@ template<typename T>
 class DynamicArray : public ISequence<T> {
 private: 
     T* m_pData;
-    size_t m_allocated;
+    size_t m_capacity;
 	size_t m_size;
 
 	// O(n): resize data structure
 	void resize(size_t _n) {
 		size_t newSize = nearestBase2(_n);
-		memresize<T>(&m_pData, m_allocated, newSize);
-		m_allocated = newSize;
+		memresize<T>(&m_pData, m_capacity, newSize);
+		m_capacity = newSize;
 	}
 
 public:
     // O(n): constructor, allow manual init alloc size
     DynamicArray() {
-		m_allocated = nearestBase2(0);
-		m_pData = memalloc<T>(m_allocated);
+		m_capacity = nearestBase2(0);
+		m_pData = memalloc<T>(m_capacity);
 		m_size = 0; 
 	}
 
@@ -47,7 +47,7 @@ public:
 
 	// O(1): get allocated memory size of dynamic array
 	size_t allocated() override {
-		return m_allocated * sizeof(T) + sizeof(DynamicArray);
+		return m_capacity * sizeof(T) + sizeof(DynamicArray);
 	}
 
 	// O(1): check if used dynamic array is empty
@@ -59,7 +59,7 @@ public:
     void clear() override {
 		assert(m_pData != nullptr && "Can't clear unallocated memory");
         memfree<T>(m_pData);
-		m_pData = memalloc<T>(m_allocated);
+		m_pData = memalloc<T>(m_capacity);
 		m_size = 0;
     }
 
@@ -93,8 +93,8 @@ public:
 
 	// Amortized O(1): push back
 	void push_back(T _elem) override {
-		if (m_size >= m_allocated) {
-			this->resize(m_allocated << 1);
+		if (m_size >= m_capacity) {
+			this->resize(m_capacity << 1);
 		}
 		m_pData[m_size] = _elem;
 		m_size++;
@@ -113,8 +113,8 @@ public:
 	// O(n): insert element at index
 	void insert(size_t _index, T _elem) override {
 		// resize if necessary
-		if (m_size >= m_allocated) {
-			this->resize(m_allocated << 1);
+		if (m_size >= m_capacity) {
+			this->resize(m_capacity << 1);
 		}
 		// push if index at end
 		if (_index >= m_size) {
@@ -143,12 +143,12 @@ public:
 		}
 		// copy backward and return
 		T ret = m_pData[_index];
-		size_t range = m_allocated - _index - 1;
+		size_t range = m_capacity - _index - 1;
 		T* pTmp = memalloc<T>(range);
 		memcpy<T>(pTmp, m_pData + _index + 1, range);
 		memcpy<T>(m_pData + _index, pTmp, range);
 		memfree<T>(pTmp);
-		m_pData[m_allocated - 1] = T();
+		m_pData[m_capacity - 1] = T();
 		m_size--;
 		return ret;
 	}
